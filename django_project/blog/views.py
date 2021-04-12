@@ -16,6 +16,15 @@ from django.views.generic import (
 )
 from .models import Post
 
+# class BaseView():
+#     tags = Tag.objects.all()
+
+# def base(render):
+#     context = {
+#         'tags' : Tag.objects.all()
+#     }
+#     return render(request, 'blog/base.html', context)
+
 # handle home page of the blog
 def home(request):
     context = {
@@ -53,7 +62,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
+    fields = ['title', 'content', 'tags']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
