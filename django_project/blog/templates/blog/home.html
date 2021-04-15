@@ -11,8 +11,16 @@
                 {% for tag in post.tags.all %}
                     <a href="#" class="badge badge-pill badge-info">{{ tag }}</a>
                 {% endfor %}
-                <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
-                <p class="article-content">{{ post.content }}</p>
+                <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.business_name }}</a></h2>
+                <p class="article-content">{{ post.description }}</p>
+                {% if post.additional_address_info %}
+                    <p class="article-content">{{ post.country }}, {{ post.state_or_province }}, {{ post.city }}<br>{{ post.address }}, {{ post.additional_address_info }}</p>
+                {% else %}
+                    <p class="article-content">{{ post.country }}, {{ post.state_or_province }}, {{ post.city }}<br>{{ post.address }}</p>
+                {% endif %}
+                {% if post.contact_email %}
+                    <p class="article-content">{{ post.contact_email }}</p>
+                {% endif %}
             </div>
         </article>
     {% endfor %}
