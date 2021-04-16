@@ -7,5 +7,6 @@ def tags_processor(request):
 
 def get_processor(request):
     return {
-        'request_get' : request.GET
+        'request_get' : request.GET,
+        'selected_tag_list' : request.GET.getlist('selected_tag')
     }

@@ -57,6 +57,15 @@
                             </div>
                         {% endfor %}
                     {% endif %}
+
+                    {% if request_get.selected_tag %}
+                        {% for temp in s_tags %}
+                            <div class="alert alert-primary" role="alert">
+                                {{ temp }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
                     {% block content %}{% endblock %}
                 </div>
                 <div class="col-md-4">
@@ -91,17 +100,50 @@
                                 <div>
                                     {% if tag_search %}
                                         {% for tag in tag_search %}
-                                            <a href="#" class="badge badge-pill badge-info">{{ tag }}</a>
+                                            <form action="{% url 'blog-home' %}" method="GET">
+                                                {% if "tag_search" in request_get %}
+                                                    <input type="hidden" name="tag_search" value={{ request_get.tag_search }}>
+                                                {% endif %}
+                                                {% if "search" in request_get %}
+                                                    <input type="hidden" name="search" value={{ request_get.search }}>
+                                                {% endif %}
+
+                                                {% if selected_tag_list %}
+                                                    {% for temp in selected_tag_list %}
+                                                        <input type="hidden" name="selected_tag" value={{ temp }}>
+                                                    {% endfor %}
+                                                {% endif %}
+                                                
+                                                <input type="hidden" name="selected_tag" value={{ tag }}>
+                                                <button type="submit" class="badge badge-pill badge-info">{{ tag }}</button>
+                                            </form>
+                                            <!-- <a href="#" class="badge badge-pill badge-info">{{ tag }}</a> -->
                                         {% endfor %}
                                     {% else %}
                                         {% for tag in tags %}
-                                            <a href="#" class="badge badge-pill badge-info">{{ tag }}</a>
+                                            <form action="{% url 'blog-home' %}" method="GET">
+                                                {% if "tag_search" in request_get %}
+                                                    <input type="hidden" name="tag_search" value={{ request_get.tag_search }}>
+                                                {% endif %}
+                                                {% if "search" in request_get %}
+                                                    <input type="hidden" name="search" value={{ request_get.search }}>
+                                                {% endif %}
+                                                {% if selected_tag_list %}
+                                                    {% for temp in selected_tag_list %}
+                                                        <input type="hidden" name="selected_tag" value={{ temp }}>
+                                                    {% endfor %}
+                                                {% endif %}
+                                                <input type="hidden" name="selected_tag" value={{ tag }}>
+                                                <button type="submit" class="badge badge-pill badge-info">{{ tag }}</button>
+                                            </form>
+                                            <!-- <a href="#" class="badge badge-pill badge-info">{{ tag }}</a> -->
                                         {% endfor %}
                                     {% endif %}
                                 </div>
                             {% endif %}
                             <li class="list-group-item">My Tags</li>
                             <p class='text-muted'>Your currently selected tags.</p>
+
 
                         </ul>
                         </p>

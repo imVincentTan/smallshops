@@ -110,25 +110,12 @@ class PostListView(ListView):
         if tag_search:
             context['tag_search'] = tags_processor(request)['tags'].filter(name__icontains=tag_search)
             if not context['tag_search']:
-            #     context['tag_search'] = temp
-            # else:
                 if 'messages' in context:
                     context['messages'].append('Sorry. No post with a similar tag was found.')
                 else:
                     context['messages'] = ['Sorry. No post with a similar tag was found.']
-            # context['tag_search'] = tags_processor(request)['tags'].filter(name__icontains=tag_search)
             
-        # context['prev_GET'] = request.GET
         
-        # request.GET
-        # if 'messages' in context:
-        #     context['messages'].append(str(request.GET))
-        # else:
-        #     context['messages'] = [str(request.GET)]
-            
-        # context['messages'].append(str(request.GET['search']))
-
-        # context['messages'].append()
 
             
         return render(request, self.template_name, context)
