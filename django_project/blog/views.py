@@ -66,47 +66,53 @@ class PostListView(ListView):
     # def get_queryset(self):
     def get(self, request, *args, **kwargs):
 
-        if 'search' in request.GET:
-            temp_search = request.GET['search']
-        else:
-            temp_search = None
-
-        if 'tag_search' in request.GET:
-            temp_tag_search = request.GET['tag_search']
-        else:
-            temp_tag_search = None
-
-        class SearchForm(forms.Form):
-            search = forms.CharField(label='search', max_length=100, initial=temp_search)
-            tag_search = forms.CharField(label='tag search', max_length=100, initial=temp_tag_search)
-
-        class TagSearchForm(forms.Form):
-            search = forms.CharField(label='search', max_length=100, initial=temp_search)
-            tag_search = forms.CharField(label='tag search', max_length=100, initial=temp_tag_search)
-
+        city_search = request.GET.get('city_search')
         search = request.GET.get('search')
         tag_search = request.GET.get('tag_search')
+        tag_filter = request.GET.getlist('selected_tag')
+        remove_tags = request.GET.getlist('remove_tag')
 
+        # remove tags from tag filter
+        tag_filter = list(set(tag_filter))
+        remove_tags = set(remove_tags)
 
+        for ind, a in enumerate(tag_filter):
+            if a in remove_tags:
+                tag_filter[ind] = None
+        
+        tag_filter = list(filter(None, tag_filter))
 
+        # instantiate context 
         context = {
             'posts': Post.objects.all(),
-            'messages': [request.GET]
+            'messages': [request.GET],
+            'has_search_parameters': False
         }
-        # if 'search' in request.GET:
-        #         context['search'] = request.GET['search']
-
-
-
         
-        if search:
-            context['posts'] = Post.objects.filter(description__icontains=search)
+        # filter posts by city
+        if city_search:
+            context['posts'] = context['posts'].filter(city__icontains=city_search)
             if not context['posts']:
                 if 'messages' in context:
                     context['messages'].append('Sorry. No post with your search query was found.')
                 else:
                     context['messages'] = ['Sorry. No post with your search query was found.']
+            else:
+                context['has_search_parameters'] = True
+
+        # filter posts by search
+        if search:
+            context['posts'] = context['posts'].filter(description__icontains=search)
+            # context['posts'] = Post.objects.filter(description__icontains=search)
+            if not context['posts']:
+                if 'messages' in context:
+                    context['messages'].append('Sorry. No post with your search query was found.')
+                else:
+                    context['messages'] = ['Sorry. No post with your search query was found.']
+            else:
+                context['has_search_parameters'] = True
             
+        # search for tag
         if tag_search:
             context['tag_search'] = tags_processor(request)['tags'].filter(name__icontains=tag_search)
             if not context['tag_search']:
@@ -115,9 +121,20 @@ class PostListView(ListView):
                 else:
                     context['messages'] = ['Sorry. No post with a similar tag was found.']
             
-        
+        # filter posts by tags
+        if tag_filter:
+            context['posts'] = context['posts'].filter(tags__name__in=tag_filter)
+            if not context['posts']:
+                if 'messages' in context:
+                    context['messages'].append('Sorry. No post with your search query was found.')
+                else:
+                    context['messages'] = ['Sorry. No post with your search query was found.']
+            else:
+                context['has_search_parameters'] = True
 
-            
+        if tag_filter:
+            context['tag_filter'] = tag_filter
+
         return render(request, self.template_name, context)
 
 

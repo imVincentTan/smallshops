@@ -50,6 +50,7 @@
         <main role="main" class="container">
             <div class="row">
                 <div class="col-md-8">
+                    <!-- alert for user -->
                     {% if messages %}
                         {% for message in messages %}
                             <div class="alert alert-primary" role="alert">
@@ -57,7 +58,48 @@
                             </div>
                         {% endfor %}
                     {% endif %}
+                    
+                    <!-- search parameter summary -->
+                    {% if has_search_parameters %}
+                    <article class="media content-section">
+                        <div class="media-body">
+                            <div class="article-metadata">
+                                <div class="text-muted">Your search summary:</div>
+                            </div>
+                            
+                            {% if request_get.city_search %}
+                                <p class="article-content">Current city: {{ request_get.city_search }}</p>
+                            {% endif %}
+                            {% if request_get.search %}
+                                <p class="article-content">Current search: {{ request_get.search }}</p>
+                            {% endif %}
+                            {% if tag_filter %}
+                                <p class="article-content">Current tags:</p>
+                                <div class="all-tag-container">
+                                    {% for tag in tag_filter %}
+                                        <form class="form-inline single-tag-container" action="{% url 'blog-home' %}" method="GET">
+                                            {% if "tag_search" in request_get %}
+                                                <input class="single-tag-container" type="hidden" name="tag_search" value={{ request_get.tag_search }}>
+                                            {% endif %}
+                                            {% if "search" in request_get %}
+                                                <input class="single-tag-container" type="hidden" name="search" value={{ request_get.search }}>
+                                            {% endif %}
+                                            {% if tag_filter %}
+                                                {% for temp in tag_filter %}
+                                                    <input class="single-tag-container" type="hidden" name="selected_tag" value={{ temp }}>
+                                                {% endfor %}
+                                            {% endif %}
+                                            <input class="single-tag-container" type="hidden" name="remove_tag" value={{ tag }}>
+                                            <button type="submit" class="btn btn-info badge badge-pill badge-info single-tag-container">{{ tag }}</button>
+                                        </form>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </article>
+                    {% endif %}
 
+                    <!-- help for debugging -->
                     {% if request_get.selected_tag %}
                         {% for temp in s_tags %}
                             <div class="alert alert-primary" role="alert">
@@ -71,29 +113,57 @@
                 <div class="col-md-4">
                     <div class="content-section">
                         <h3>Search</h3>
-                        <p class='text-muted'>You can narrow down your search here.</p>
+                        <p class="text-muted">You can narrow down your search here.</p>
                         <ul class="list-group">
+                            <!-- CITY SEARCH -->
                             <li class="list-group-item">My City</li>
-                            <p class='text-muted'>Input your city so we can find small businesses near you.</p>
+                            <p class="text-muted">Input your city so we can find small businesses near you.</p>
+                            <form action="{% url 'blog-home' %}" method="GET">
+                                <input type="text" name="city_search">
+                                {% if "search" in request_get %}
+                                    <input type="hidden" name="search" value={{ request_get.search }}>
+                                {% endif %}
+                                {% if "tag_search" in request_get %}
+                                    <input type="hidden" name="tag_search" value={{ request_get.tag_search }}>
+                                {% endif %}
+                                {% if tag_filter %}
+                                    {% for temp in tag_filter %}
+                                        <input type="hidden" name="selected_tag" value={{ temp }}>
+                                    {% endfor %}
+                                {% endif %}
+                                <button type="submit">Search</button>
+                            </form>
 
+                            <!-- POST SEARCH -->
                             <li class="list-group-item">Search</li>
-                            <p class='text-muted'>You can try to look for something more specific using this search bar.</p>
+                            <p class="text-muted">You can try to look for something more specific using this search bar.</p>
                             <form action="{% url 'blog-home' %}" method="GET">
                                 <input type="text" name="search">
                                 {% if "tag_search" in request_get %}
                                     <input type="hidden" name="tag_search" value={{ request_get.tag_search }}>
                                 {% endif %}
+                                {% if tag_filter %}
+                                    {% for temp in tag_filter %}
+                                        <input type="hidden" name="selected_tag" value={{ temp }}>
+                                    {% endfor %}
+                                {% endif %}
                                 <button type="submit">Search</button>
                             </form>
 
+                            <!-- TAGS SEARCH -->
                             <li class="list-group-item">Tags</li>
-                            <p class='text-muted'>You can narrow your search by choosing some tags.</p>
+                            <p class="text-muted">You can narrow your search by choosing some tags.</p>
 
                             <form action="{% url 'blog-home' %}" method="GET">
                                 {% if "search" in request_get %}
                                     <input type="hidden" name="search" value={{ request_get.search }}>
                                 {% endif %}
                                 <input type="text" name="tag_search">
+                                {% if tag_filter %}
+                                    {% for temp in tag_filter %}
+                                        <input type="hidden" name="selected_tag" value={{ temp }}>
+                                    {% endfor %}
+                                {% endif %}
                                 <button type="submit">Search</button>
                             </form>
                             {% if tags %}
@@ -108,16 +178,14 @@
                                                     <input type="hidden" name="search" value={{ request_get.search }}>
                                                 {% endif %}
 
-                                                {% if selected_tag_list %}
-                                                    {% for temp in selected_tag_list %}
+                                                {% if tag_filter %}
+                                                    {% for temp in tag_filter %}
                                                         <input type="hidden" name="selected_tag" value={{ temp }}>
                                                     {% endfor %}
                                                 {% endif %}
-                                                
                                                 <input type="hidden" name="selected_tag" value={{ tag }}>
                                                 <button type="submit" class="badge badge-pill badge-info">{{ tag }}</button>
                                             </form>
-                                            <!-- <a href="#" class="badge badge-pill badge-info">{{ tag }}</a> -->
                                         {% endfor %}
                                     {% else %}
                                         {% for tag in tags %}
@@ -128,22 +196,20 @@
                                                 {% if "search" in request_get %}
                                                     <input type="hidden" name="search" value={{ request_get.search }}>
                                                 {% endif %}
-                                                {% if selected_tag_list %}
-                                                    {% for temp in selected_tag_list %}
+                                                {% if tag_filter %}
+                                                    {% for temp in tag_filter %}
                                                         <input type="hidden" name="selected_tag" value={{ temp }}>
                                                     {% endfor %}
                                                 {% endif %}
                                                 <input type="hidden" name="selected_tag" value={{ tag }}>
                                                 <button type="submit" class="badge badge-pill badge-info">{{ tag }}</button>
                                             </form>
-                                            <!-- <a href="#" class="badge badge-pill badge-info">{{ tag }}</a> -->
                                         {% endfor %}
                                     {% endif %}
                                 </div>
                             {% endif %}
-                            <li class="list-group-item">My Tags</li>
-                            <p class='text-muted'>Your currently selected tags.</p>
 
+                            
 
                         </ul>
                         </p>
