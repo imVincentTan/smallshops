@@ -7,13 +7,46 @@
             <div class="media-body">
             <div class="article-metadata">
                 <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
-                <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
             </div>
-                {% for tag in post.tags.all %}
-                    <a href="#" class="badge badge-pill badge-info">{{ tag }}</a>
-                {% endfor %}
-                <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
-                <p class="article-content">{{ post.content }}</p>
+                {% if post.tags.all %}
+                    <div class="all-tag-container">
+                        {% for tag in post.tags.all %}
+                            <!-- <div> -->
+                                <form action="{% url 'blog-home' %}" method="GET">
+                                    {% if "tag_search" in request_get %}
+                                        <input type="hidden" name="tag_search" value={{ request_get.tag_search }}>
+                                    {% endif %}
+                                    {% if "search" in request_get %}
+                                        <input type="hidden" name="search" value={{ request_get.search }}>
+                                    {% endif %}
+                                    {% if tag_filter %}
+                                        {% for temp in tag_filter %}
+                                            <input type="hidden" name="selected_tag" value={{ temp }}>
+                                        {% endfor %}
+                                    {% endif %}
+                                    <input type="hidden" name="selected_tag" value={{ tag }}>
+                                    <button type="submit" class="btn badge badge-pill badge-info single-tag-container">{{ tag }}</button>
+                                </form>
+                            <!-- </div> -->
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.business_name }}</a></h2>
+                <p class="article-content">{{ post.description }}</p>
+                {% if post.website %}
+                    <p class="article-content">{{ post.website }}</p>
+                {% endif %}
+                <p class="article-content">{{ post.country }}, {{ post.state_or_province }}, {{ post.city }}</p>
+                {% if post.address %}
+                    <p class="article-content">{{ post.address }}</p>
+                {% endif %}
+                {% if post.additional_address_info %}
+                    <p class="article-content">{{ post.additional_address_info }}</p>
+                {% endif %}
+                {% if post.contact_email %}
+                    <p class="article-content">{{ post.contact_email }}</p>
+                {% endif %}
             </div>
         </article>
     {% endfor %}

@@ -47,13 +47,6 @@ def home(request):
 
 
 class PostListView(ListView):
-    # class SearchForm(forms.Form):
-    #     search = forms.CharField(label='search', max_length=100, initial=request.GET['search'])
-    #     tag_search = forms.CharField(label='tag search', max_length=100, initial=request.GET['search'])
-
-    # class TagSearchForm(forms.Form):
-    #     search = forms.CharField(label='search', max_length=100, initial=request.GET['search'])
-    #     tag_search = forms.CharField(label='tag search', max_length=100, initial=request.GET['search'])
     
     model = Post
     template_name = 'blog/home.html'    # <app>/<model>_<viewtype>.html
@@ -61,9 +54,6 @@ class PostListView(ListView):
     ordering = ['-date_posted']
     paginate_by = 5
 
-    
-
-    # def get_queryset(self):
     def get(self, request, *args, **kwargs):
 
         city_search = request.GET.get('city_search')
@@ -85,7 +75,6 @@ class PostListView(ListView):
         # instantiate context 
         context = {
             'posts': Post.objects.all(),
-            'messages': [request.GET],
             'has_search_parameters': False
         }
         
@@ -94,16 +83,15 @@ class PostListView(ListView):
             context['posts'] = context['posts'].filter(city__icontains=city_search)
             if not context['posts']:
                 if 'messages' in context:
-                    context['messages'].append('Sorry. No post with your search query was found.')
+                    context['messages'].append('Sorry. No post with your city was found.')
                 else:
-                    context['messages'] = ['Sorry. No post with your search query was found.']
+                    context['messages'] = ['Sorry. No post with your city was found.']
             else:
                 context['has_search_parameters'] = True
 
         # filter posts by search
         if search:
             context['posts'] = context['posts'].filter(description__icontains=search)
-            # context['posts'] = Post.objects.filter(description__icontains=search)
             if not context['posts']:
                 if 'messages' in context:
                     context['messages'].append('Sorry. No post with your search query was found.')
@@ -126,11 +114,13 @@ class PostListView(ListView):
             context['posts'] = context['posts'].filter(tags__name__in=tag_filter)
             if not context['posts']:
                 if 'messages' in context:
-                    context['messages'].append('Sorry. No post with your search query was found.')
+                    context['messages'].append('Sorry. No post with your tags filter was found.')
                 else:
-                    context['messages'] = ['Sorry. No post with your search query was found.']
+                    context['messages'] = ['Sorry. No post with your tags filter was found.']
             else:
                 context['has_search_parameters'] = True
+
+        context['posts'] = list(set(context['posts']))
 
         if tag_filter:
             context['tag_filter'] = tag_filter
@@ -147,14 +137,14 @@ class UserPostListView(ListView):
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
-        return Post.objects.filter(author=user).order_by('-date_posted')
+        return list(set(Post.objects.filter(author=user)))
 
 class PostDetailView(DetailView):
     model = Post
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['business_name', 'country', 'state_or_province', 'city', 'address', 'additional_address_info', 'description', 'contact_email', 'tags']
+    fields = ['business_name', 'website', 'country', 'state_or_province', 'city', 'address', 'additional_address_info', 'description', 'contact_email', 'tags']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -162,7 +152,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['business_name', 'country', 'state_or_province', 'city', 'address', 'additional_address_info', 'description', 'contact_email', 'tags']
+    fields = ['business_name', 'website', 'country', 'state_or_province', 'city', 'address', 'additional_address_info', 'description', 'contact_email', 'tags']
 
     def form_valid(self, form):
         form.instance.author = self.request.user

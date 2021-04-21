@@ -58,7 +58,8 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    
+
+
                     <!-- search parameter summary -->
                     {% if has_search_parameters %}
                     <article class="media content-section">
@@ -171,42 +172,53 @@
                             {% if tags %}
                                 <div>
                                     {% if tag_search %}
-                                        {% for tag in tag_search %}
-                                            <form action="{% url 'blog-home' %}" method="GET">
-                                                {% if "tag_search" in request_get %}
-                                                    <input type="hidden" name="tag_search" value={{ request_get.tag_search }}>
-                                                {% endif %}
-                                                {% if "search" in request_get %}
-                                                    <input type="hidden" name="search" value={{ request_get.search }}>
-                                                {% endif %}
 
-                                                {% if tag_filter %}
-                                                    {% for temp in tag_filter %}
-                                                        <input type="hidden" name="selected_tag" value={{ temp }}>
-                                                    {% endfor %}
-                                                {% endif %}
-                                                <input type="hidden" name="selected_tag" value={{ tag }}>
-                                                <button type="submit" class="badge badge-pill badge-info">{{ tag }}</button>
-                                            </form>
-                                        {% endfor %}
+                                        <div class="all-tag-container">
+                                            {% for tag in tag_search %}
+                                                <!-- <div> -->
+                                                    <form action="{% url 'blog-home' %}" method="GET">
+                                                        {% if "tag_search" in request_get %}
+                                                            <input type="hidden" name="tag_search" value={{ request_get.tag_search }}>
+                                                        {% endif %}
+                                                        {% if "search" in request_get %}
+                                                            <input type="hidden" name="search" value={{ request_get.search }}>
+                                                        {% endif %}
+                                                        {% if tag_filter %}
+                                                            {% for temp in tag_filter %}
+                                                                <input type="hidden" name="selected_tag" value={{ temp }}>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                        <input type="hidden" name="selected_tag" value={{ tag }}>
+                                                        <button type="submit" class="btn badge badge-pill badge-info single-tag-container">{{ tag }}</button>
+                                                    </form>
+                                                <!-- </div> -->
+                                            {% endfor %}
+                                        </div>
+                                        
                                     {% else %}
-                                        {% for tag in tags %}
-                                            <form action="{% url 'blog-home' %}" method="GET">
-                                                {% if "tag_search" in request_get %}
-                                                    <input type="hidden" name="tag_search" value={{ request_get.tag_search }}>
-                                                {% endif %}
-                                                {% if "search" in request_get %}
-                                                    <input type="hidden" name="search" value={{ request_get.search }}>
-                                                {% endif %}
-                                                {% if tag_filter %}
-                                                    {% for temp in tag_filter %}
-                                                        <input type="hidden" name="selected_tag" value={{ temp }}>
-                                                    {% endfor %}
-                                                {% endif %}
-                                                <input type="hidden" name="selected_tag" value={{ tag }}>
-                                                <button type="submit" class="badge badge-pill badge-info">{{ tag }}</button>
-                                            </form>
-                                        {% endfor %}
+
+                                        <div class="all-tag-container">
+                                            {% for tag in tags %}
+                                                <!-- <div> -->
+                                                    <form action="{% url 'blog-home' %}" method="GET">
+                                                        {% if "tag_search" in request_get %}
+                                                            <input type="hidden" name="tag_search" value={{ request_get.tag_search }}>
+                                                        {% endif %}
+                                                        {% if "search" in request_get %}
+                                                            <input type="hidden" name="search" value={{ request_get.search }}>
+                                                        {% endif %}
+                                                        {% if tag_filter %}
+                                                            {% for temp in tag_filter %}
+                                                                <input type="hidden" name="selected_tag" value={{ temp }}>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                        <input type="hidden" name="selected_tag" value={{ tag }}>
+                                                        <button type="submit" class="btn badge badge-pill badge-info single-tag-container">{{ tag }}</button>
+                                                    </form>
+                                                <!-- </div> -->
+                                            {% endfor %}
+                                        </div>
+                                    
                                     {% endif %}
                                 </div>
                             {% endif %}

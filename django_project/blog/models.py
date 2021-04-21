@@ -10,10 +10,11 @@ from taggit.managers import TaggableManager
 class Post(models.Model):
     # each attribute is a field in the DB
     business_name = models.CharField(max_length = 100)
+    website = models.CharField(max_length = 100,null=True, blank=True)
     country = models.CharField(max_length=100)
     state_or_province = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
-    address = models.CharField(max_length=100)
+    address = models.CharField(max_length=100,null=True, blank=True)
     additional_address_info = models.CharField(max_length=100,null=True, blank=True)
     description = models.TextField(max_length=2000)
     date_posted = models.DateTimeField(default=timezone.now)
